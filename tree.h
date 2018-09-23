@@ -22,7 +22,7 @@ struct Tree
 
 	void load(char *str)
 	{
-		char priority[] = {'+','-','*','/'};
+		char priority[] = {'+','-','*','/','^'};
 		std::string left,right="";
 		for (char sign: priority)
 		{
@@ -44,7 +44,7 @@ struct Tree
 			return;
 		}
 		std::string left,right="";
-		char priority[] = {'+','-','*','/'}; 
+		char priority[] = {'+','-','*','/','^'}; 
 		for (char sign: priority)
 		{
 			if(find(sign,&content[0],left,right))
@@ -63,16 +63,18 @@ struct Tree
 		std::string left_string = "";
 		for (char* it = start; *it; ++it)
 		{
-			if (*it == search && !found)
-			{
-				found = true;
-				left_str = left_string;
-				continue;
-			}
-
+			if(*it == '(')
+				return found;
 			if(found)
 			{
 				right_str+= *it;
+				continue;
+			}
+
+			if (*it == search)
+			{
+				found = true;
+				left_str = left_string;
 				continue;
 			}
 

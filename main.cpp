@@ -16,7 +16,7 @@ void menu() {
       //char* str="7/4*((a+-+--b)*a)+3";
       //char* str="2+(3)";
       //char* str="7/4*((a+b)^4*a)+3";
-      char* str="2*3+1";
+      char* str="2*3+2+4";
 
       Tree test;
       test.load(str);
