@@ -22,11 +22,20 @@ struct Tree
 
 	void load(char *str)
 	{
+		//create expression string (needed for parsing)
+		std::string base = "";
+		for(char *it = str;*it;++it)
+		{
+			base+=*it;
+		}
+		
+		parse(base);
+
 		char priority[] = {'+','-','*','/','^'};
 		std::string left,right="";
 		for (char sign: priority)
 		{
-			if(find(sign,str,left,right))
+			if(find(sign,&base[0],left,right))
 			{
 				root = new Node(sign);
 				build(left,root->left_child);
@@ -115,6 +124,44 @@ struct Tree
 		return;
 	}
 
+	void parse(std::string &content)
+	{
+		int pos;
+		if(wrongFormat(content,pos))
+		{
+			//determine outcome from combination of signs
+			std::string new_sign = "+";
+			if (content[pos] == '-' && content[pos+1] == '-')
+				new_sign = "+";
+			else if (content[pos] == '-' || content[pos+1] == '-')
+				new_sign = "-";
+			
+			content.erase(content.begin()+pos+1);
+			content.replace(pos,1,new_sign);
+			parse(content);
+			return;
+		}
+		return;
+	}
+
+	//detects if there is more than one sign together and creates string of expression
+	bool wrongFormat(std::string content,int &position)
+	{
+		int count=0;
+		for (int i = 0; i < content.size();i++)
+		{
+			if(count > 1)
+			{
+				position = i-2;
+				return true;
+			}
+			if(content[i] == '+' || content[i] == '-')
+				count++;
+			else
+				count = 0;
+		}
+		return false;
+	}
 
 	void print()
 	{
