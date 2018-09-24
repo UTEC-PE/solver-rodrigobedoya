@@ -36,7 +36,7 @@ struct Tree
 		}
 	}
 
-	void build(std::string content,Node *&node)
+	void build(std::string &content,Node *&node)
 	{
 		if(content.length() == 1)
 		{
@@ -55,23 +55,30 @@ struct Tree
 				return;
 			}			
 		}
+		deleteOuterP(content);
+		build(content,node);
+		return;
 	}
 
 	bool find(char search,char *start, std::string &left_str, std::string &right_str)
 	{
 		bool found = false;
+		int count = 0;
 		std::string left_string = "";
 		for (char* it = start; *it; ++it)
 		{
 			if(*it == '(')
-				return found;
+				count++;
+			else if (*it == ')')
+				count--;
+
 			if(found)
 			{
 				right_str+= *it;
 				continue;
 			}
 
-			if (*it == search)
+			if (*it == search and !count)
 			{
 				found = true;
 				left_str = left_string;
@@ -83,12 +90,36 @@ struct Tree
 		return found;
 	}
 
+	void deleteOuterP(std::string &content)
+	{
+		bool found_left_p = false;
+		int left_pos,right_pos;
+		for(int i = 0; i < content.size();i++)
+		{
+			if (!found_left_p)
+			{
+				if(content[i] == '(')
+				{
+					left_pos = i;
+					found_left_p = true;
+					continue;
+				}
+			}
+
+			if(content[i] == ')')
+				right_pos = i;
+
+		}
+		content.erase(content.begin()+right_pos);
+		content.erase(content.begin()+left_pos);
+		return;
+	}
+
 
 	void print()
 	{
 	 	std::cout << "result: "<<calc(root) << std::endl;
 	}
-
 
 
 	float calc(Node* node)
@@ -98,6 +129,7 @@ struct Tree
 		return operate(node);
 	}
 
+	//determine the value of int or variable
 	float evaluate(Node* node)
 	{
 		if(isdigit(node->data))
@@ -109,6 +141,7 @@ struct Tree
 			throw "undefined_variables";
 	}
 
+	//determine operation required
 	float operate(Node* node)
 	{
 		switch(node->data)
